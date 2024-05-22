@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Product {
     // Attributi
-    private int code;
+    private final int code;
     private String name;
     private String description;
     private BigDecimal price;
@@ -14,35 +14,35 @@ public class Product {
 
     // Costruttore
     public Product(String name, String description, BigDecimal price, BigDecimal vat) {
-        this.code = new Random().nextInt(999); // generazione di un codice casuale
-        this.name = name;
-        this.description = description;
-        this.price = price.setScale(2, RoundingMode.HALF_UP);
-        this.vat = vat.setScale(2, RoundingMode.HALF_UP);
+        this.code = new Random().nextInt(1,1000);
+        this.name = valueOrDefault(name);
+        this.description = valueOrDefault(description);
+        this.price = valueOrDefault(price);
+        this.vat = valueOrDefault(vat);
     }
 
     // Setter
     public void setName(String name) {
-        this.name = name;
+        this.name = valueOrDefault(name);
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = valueOrDefault(description);
     }
 
 
     public void setPrice(BigDecimal price) {
-        this.price = price.setScale(2, RoundingMode.HALF_UP);
+        this.price = valueOrDefault(price);
     }
 
 
     public void setVat(BigDecimal vat) {
-        this.vat = vat.setScale(2, RoundingMode.HALF_UP);
+        this.vat = valueOrDefault(vat);
     }
 
     // Getter
     public String getCode() {
-        return String.format("%06d", this.code); // restituisce il codice come stringa con padding a sinistra
+        return String.format("%06d", this.code);
     }
 
     public String getName() {
@@ -61,15 +61,27 @@ public class Product {
         return this.vat;
     }
 
-    public BigDecimal getBasePrice() {
-        return this.price;
+    public BigDecimal getFullPrice() {
+        BigDecimal vatAmount = price.multiply(vat.divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN));
+        return price.add(vatAmount).setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    public BigDecimal getPriceWithVat() {
-        return this.price.multiply(this.vat.divide(BigDecimal.valueOf(100)).add(BigDecimal.ONE)).setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public String getExtendedName() {
+    public String getFullName() {
         return getCode() + "-" + this.name;
+    }
+
+    // Methods
+    private String valueOrDefault(String value){
+        if(value == null || value.isEmpty()){
+            return "N.D.";
+        }
+        return value;
+    }
+
+    private BigDecimal valueOrDefault(BigDecimal value){
+        if(value == null || value.compareTo(BigDecimal.ZERO) < 0){
+            return BigDecimal.ZERO;
+        }
+        return value.setScale(2, RoundingMode.HALF_EVEN);
     }
 }
