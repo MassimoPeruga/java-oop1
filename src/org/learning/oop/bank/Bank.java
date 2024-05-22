@@ -1,7 +1,6 @@
 package org.learning.oop.bank;
 
 import java.math.BigDecimal;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Bank {
@@ -9,29 +8,37 @@ public class Bank {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Inserisci il tuo nome: ");
         String name = scanner.nextLine();
-        int accountNumber = new Random().nextInt(1000) + 1;
-        Account account = new Account(name, accountNumber);
+        Account account = new Account(name);
         System.out.println("Account creato. " + account.getAccountInfo());
 
-        while (true) {
-            System.out.println("Cosa vuoi fare? 1: Depositare, 2: Prelevare, 3: Uscire");
-            int choice = scanner.nextInt();
-            if (choice == 3) {
-                break;
-            }
-            System.out.print("Inserisci la somma: ");
-            BigDecimal amount = scanner.nextBigDecimal();
-            if (choice == 1) {
-                account.deposit(amount);
-                System.out.println("Deposito completato. " + account.getAccountInfo());
-            } else if (choice == 2) {
-                if (account.withdraw(amount)) {
-                    System.out.println("Prelievo completato. " + account.getAccountInfo());
-                } else {
-                    System.out.println("Operazione fallita, saldo insufficente.");
-                }
+        while(true) {
+            System.out.print("Cosa vuoi fare? (1: depositare) - (2: prelevare) - (3: uscire): ");
+            String input = scanner.nextLine();
+
+            switch (input) {
+                case "1" :
+                    System.out.println("******************************");
+                    System.out.print("Quale somma vuoi depositare? (€): ");
+                    BigDecimal amountToDeposit = new BigDecimal(scanner.nextLine());
+                    boolean deposit = account.deposit(amountToDeposit);
+                    if (deposit) {
+                        System.out.println("Deposito riuscito. " + account.getAccountInfo());
+                    } else {
+                        System.out.println("Operazione fallita.");
+                    }
+                    break;
+                case "2":
+                    System.out.println("******************************");
+                    System.out.print("Quale somma vuoi prelevare? (€): ");
+                    boolean withdraw = account.withdraw(new BigDecimal(scanner.nextLine()));
+                    if(withdraw){
+                        System.out.println("Prelievo riuscito. " + account.getAccountInfo());
+                    } else {
+                        System.out.println("Saldo insufficente.");
+                    }
+                    break;
+                case "3" : return;
             }
         }
-        scanner.close();
     }
 }

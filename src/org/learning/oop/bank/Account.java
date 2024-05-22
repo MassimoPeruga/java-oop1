@@ -2,30 +2,28 @@ package org.learning.oop.bank;
 
 import java.math.BigDecimal;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Account {
-    private int accountNumber;
+    private final int accountNumber;
     private String ownerName;
     private BigDecimal balance;
 
     // Constructor
-    public Account(String ownerName, int accountNumber) {
-        this.ownerName = ownerName;
-        this.accountNumber = accountNumber;
+    public Account(String ownerName) {
+        this.ownerName = valueOrDefault(ownerName);
+        this.accountNumber = new Random().nextInt(1,1000);
         this.balance = BigDecimal.ZERO;
     }
 
     // Setter
-    public String getOwnerName() {
-        return this.ownerName;
-    }
-
     public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
+        this.ownerName = valueOrDefault(ownerName);
     }
 
     // Getter
+    public String getOwnerName() {
+        return this.ownerName;
+    }
     public int getAccountNumber() {
         return this.accountNumber;
     }
@@ -39,16 +37,27 @@ public class Account {
     }
 
     // Methods
-    public void deposit(BigDecimal amount) {
-        this.balance = this.balance.add(amount);
+    private String valueOrDefault(String value){
+        if (!value.isEmpty()){
+            return value;
+        } else {
+            return "User";
+        }
+    }
+
+    public boolean deposit(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) >= 0) {
+            balance = balance.add(amount);
+            return true;
+        } else {
+            return false;        }
     }
 
     public boolean withdraw(BigDecimal amount) {
-        if (this.balance.compareTo(amount) >= 0) {
-            this.balance = this.balance.subtract(amount);
+        if(balance.subtract(amount).compareTo(BigDecimal.ZERO) >= 0){
+            balance = balance.subtract(amount);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
